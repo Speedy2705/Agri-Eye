@@ -2,13 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom scrollbar */
+body {
+  background: linear-gradient(
+    135deg,
+    #E8F5E9 0%,
+    #F0F7F4 25%,
+    #FFF8E8 60%,
+    #FFF3CD 80%,
+    #FFF8E8 100%
+  );
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: #1A2E1A;
+  font-family: var(--font-sora), "Sora", sans-serif;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+      ellipse at 20% 20%,
+      rgba(82, 183, 136, 0.18) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at 80% 80%,
+      rgba(244, 160, 28, 0.14) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at 50% 50%,
+      rgba(240, 247, 244, 0.6) 0%,
+      transparent 70%
+    );
+  animation: bgShift 18s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+html[data-script="devanagari"] body {
+  font-family: var(--font-noto-devanagari), "Noto Sans Devanagari", sans-serif;
+}
+
+html[data-script="telugu"] body {
+  font-family: var(--font-noto-telugu), "Noto Sans Telugu", sans-serif;
+}
+
+html[data-script="tamil"] body {
+  font-family: var(--font-noto-tamil), "Noto Sans Tamil", sans-serif;
+}
+
+html[data-script="kannada"] body {
+  font-family: var(--font-noto-kannada), "Noto Sans Kannada", sans-serif;
+}
+
+html[data-script="bengali"] body {
+  font-family: var(--font-noto-bengali), "Noto Sans Bengali", sans-serif;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1A2E1A;
+  background: #C8E6C9;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -20,15 +78,104 @@
   background: #F4A01C;
 }
 
+.card-light {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(200, 230, 201, 0.7);
+  border-radius: 16px;
+  box-shadow:
+    0 4px 24px rgba(45, 106, 79, 0.07),
+    0 1px 4px rgba(45, 106, 79, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.btn-primary,
+.btn-accent,
+.btn-danger {
+  border-radius: 10px;
+  color: #ffffff;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #2D6A4F, #52B788);
+  box-shadow: 0 4px 14px rgba(45, 106, 79, 0.3);
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, #F4A01C, #F97316);
+  box-shadow: 0 4px 14px rgba(244, 160, 28, 0.3);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #DC2626, #F87171);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.26);
+}
+
+.btn-primary:hover,
+.btn-accent:hover,
+.btn-danger:hover {
+  transform: translateY(-1px);
+}
+
+.stat-glow {
+  box-shadow: 0 0 20px rgba(45, 106, 79, 0.12);
+}
+
+.water-slider {
+  accent-color: #F4A01C;
+}
+
+.water-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2D6A4F 0%, #52B788 100%);
+}
+
+.water-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -4px;
+  border-radius: 999px;
+  background: #F4A01C;
+  border: 1px solid #F97316;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
 @layer utilities {
   .shimmer {
     background: linear-gradient(
       90deg,
-      transparent 0%,
-      rgba(244, 160, 28, 0.15) 50%,
-      transparent 100%
+      rgba(255, 255, 255, 0) 0%,
+      rgba(232, 245, 233, 0.95) 45%,
+      rgba(240, 253, 244, 0.95) 55%,
+      rgba(255, 255, 255, 0) 100%
     );
     background-size: 200% 100%;
     animation: shimmer 2.5s linear infinite;
   }
+}
+
+@keyframes bgShift {
+  0% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+    opacity: 1;
+  }
+  50% {
+    background-position: 30% 20%, 70% 80%, 50% 50%;
+    opacity: 0.85;
+  }
+  100% {
+    background-position: 10% 40%, 90% 60%, 50% 50%;
+    opacity: 1;
+  }
+}
+
+/* Language panel portal — always above everything */
+.language-panel-portal {
+  z-index: 99999 !important;
+  position: fixed !important;
 }

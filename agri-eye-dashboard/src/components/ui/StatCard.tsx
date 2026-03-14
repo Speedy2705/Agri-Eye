@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Card from "./Card";
@@ -16,6 +16,11 @@ interface StatCardProps {
 export default function StatCard({ icon: Icon, label, value, unit, className }: StatCardProps) {
   const [display, setDisplay] = useState("0");
   const rafRef = useRef<number>(0);
+  const frostedStyle: CSSProperties = {
+    background: "rgba(240, 253, 244, 0.75)",
+    backdropFilter: "blur(8px)",
+    WebkitBackdropFilter: "blur(8px)",
+  };
 
   useEffect(() => {
     const start = performance.now();
@@ -35,9 +40,14 @@ export default function StatCard({ icon: Icon, label, value, unit, className }: 
   }, [value]);
 
   return (
-    <Card className={cn("flex flex-col gap-2 animate-countup", className)}>
+    <Card
+      className={cn("flex flex-col gap-2 animate-countup stat-glow", className)}
+      style={frostedStyle}
+    >
       <div className="flex items-center gap-2 text-muted">
-        <Icon size={18} />
+        <span className="inline-flex items-center justify-center rounded-lg bg-primary/10 p-2 text-primary">
+          <Icon size={18} />
+        </span>
         <span className="text-sm">{label}</span>
       </div>
       <div className="flex items-end gap-1">

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { perimeterNodes, type PerimeterNode } from "@/lib/mockData";
+import { hornZones, perimeterNodes, type PerimeterNode } from "@/lib/mockData";
+import { useLanguage } from "@/lib/LanguageContext";
 
 const nodeColor: Record<string, string> = {
   alert:   "#EF4444",
@@ -14,8 +15,18 @@ interface HoveredNode extends PerimeterNode {
   svgCy: number;
 }
 
-export default function PerimeterMap() {
+interface PerimeterMapProps {
+  hornStates?: boolean[];
+}
+
+export default function PerimeterMap({ hornStates }: PerimeterMapProps) {
   const [hovered, setHovered] = useState<HoveredNode | null>(null);
+  const { t } = useLanguage();
+
+  const hornActiveByNode = hornZones.reduce<Record<number, boolean>>((acc, zone, index) => {
+    acc[zone.nodeId] = hornStates ? Boolean(hornStates[index]) : zone.hornActive;
+    return acc;
+  }, {});
 
   return (
     <div className="relative w-full">
@@ -28,7 +39,7 @@ export default function PerimeterMap() {
         <rect
           x="20" y="20" width="360" height="260"
           rx="16" ry="16"
-          fill="#152415"
+          fill="#E8F5E9"
           stroke="#2D6A4F"
           strokeWidth="1.5"
         />
@@ -57,6 +68,13 @@ export default function PerimeterMap() {
               onMouseLeave={() => setHovered(null)}
               style={{ cursor: "pointer" }}
             >
+              {hornActiveByNode[indexFromNodeId(node.id)] && (
+                <circle cx={cx} cy={cy} r="15" fill="none" stroke="#EF4444" strokeWidth="2" opacity="0.55">
+                  <animate attributeName="r" from="10" to="22" dur="1.2s" repeatCount="indefinite" />
+                  <animate attributeName="opacity" from="0.7" to="0" dur="1.2s" repeatCount="indefinite" />
+                </circle>
+              )}
+
               {(isAlert || isWarning) && (
                 <circle cx={cx} cy={cy} r="10" fill="none" stroke={color} strokeWidth="1.5" opacity="0.7">
                   <animate attributeName="r" from="7" to="18" dur={isAlert ? "1.5s" : "2s"} repeatCount="indefinite" />
@@ -64,6 +82,19 @@ export default function PerimeterMap() {
                 </circle>
               )}
               <circle cx={cx} cy={cy} r="6" fill={color} />
+
+              {hornActiveByNode[indexFromNodeId(node.id)] && (
+                <text
+                  x={cx + 10}
+                  y={cy + 4}
+                  fill="#F4A01C"
+                  fontSize="11"
+                  fontFamily="Sora, sans-serif"
+                >
+                  🔊
+                </text>
+              )}
+
               <text x={cx} y={cy - 11} textAnchor="middle" fill={color} fontSize="7.5" fontFamily="Sora, sans-serif" fontWeight="500">
                 {node.id}
               </text>
@@ -84,10 +115,15 @@ export default function PerimeterMap() {
           <span className="font-semibold">{hovered.id}</span>
           <span className="mx-1 text-muted">&#8212;</span>
           <span className="capitalize font-medium" style={{ color: nodeColor[hovered.status] }}>
-            {hovered.status}
+            {hovered.status === "alert" ? t("alert") : hovered.status === "warning" ? t("warning") : t("active")}
           </span>
         </div>
       )}
     </div>
   );
+}
+
+function indexFromNodeId(nodeId: string): number {
+  const number = Number(nodeId.replace("Node ", ""));
+  return Number.isFinite(number) ? number : -1;
 }

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Bell } from "lucide-react";
+import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
+import { useLanguage } from "@/lib/LanguageContext";
 
 function LiveClock() {
   const [time, setTime] = useState("");
@@ -23,32 +25,35 @@ function LiveClock() {
   }, []);
 
   return (
-    <span className="font-mono text-xs sm:text-sm text-foreground/70 tabular-nums">{time}</span>
+    <span className="font-mono text-xs sm:text-sm text-muted tabular-nums">{time}</span>
   );
 }
 
 export default function Navbar() {
+  const { t } = useLanguage();
+
   return (
-    <header className="h-14 px-3 sm:px-4 md:px-6 flex items-center justify-between backdrop-blur-sm bg-background/80 border-b border-primary/30 flex-shrink-0">
+    <header className="h-14 px-3 sm:px-4 md:px-6 flex items-center justify-between bg-white/75 backdrop-blur-xl border-b border-border/60 flex-shrink-0">
       {/* Left */}
-      <p className="text-foreground/80 text-xs sm:text-sm font-medium truncate pr-2">
-        Kesarwani Mango Orchard &mdash; Jabalpur
+      <p className="text-foreground text-xs sm:text-sm font-semibold truncate pr-2">
+        {t("farmName")}
       </p>
 
       {/* Right */}
       <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
         <LiveClock />
+        <LanguageSwitcher />
 
         {/* Bell */}
         <div className="relative">
-          <Bell size={18} className="text-foreground/70" />
-          <span className="absolute -top-1.5 -right-1.5 bg-warning text-background text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+          <Bell size={18} className="text-primary" />
+          <span className="absolute -top-1.5 -right-1.5 bg-grad-accent text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
             2
           </span>
         </div>
 
         {/* Avatar */}
-        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary flex items-center justify-center text-foreground text-[10px] sm:text-xs font-bold select-none">
+        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-grad-success flex items-center justify-center text-white text-[10px] sm:text-xs font-bold select-none shadow-sm">
           KO
         </div>
       </div>

@@ -7,9 +7,9 @@ import { cn } from "@/lib/utils";
 type ToastLevel = "danger" | "warning" | "clear";
 
 const levelClasses: Record<ToastLevel, string> = {
-  danger:  "border-danger/40 bg-danger/10 text-danger",
-  warning: "border-warning/40 bg-warning/10 text-warning",
-  clear:   "border-success/40 bg-success/10 text-success",
+  danger:  "border-danger text-foreground",
+  warning: "border-warning text-foreground",
+  clear:   "border-success text-foreground",
 };
 
 interface ToastProps {
@@ -27,7 +27,7 @@ export default function Toast({ message, level, onClose }: ToastProps) {
         exit={{ opacity: 0, y: 80 }}
         transition={{ duration: 0.3 }}
         className={cn(
-          "fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-xl border px-4 py-3 shadow-lg backdrop-blur-sm max-w-sm",
+          "fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-xl border-l-4 border border-border bg-card px-4 py-3 shadow-xl backdrop-blur-sm max-w-sm",
           levelClasses[level]
         )}
       >

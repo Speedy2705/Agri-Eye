@@ -3,10 +3,10 @@ import { cn } from "@/lib/utils";
 type BadgeVariant = "success" | "warning" | "danger" | "default";
 
 const variantClasses: Record<BadgeVariant, string> = {
-  success: "bg-success/20 text-success border border-success/30",
-  warning: "bg-warning/20 text-warning border border-warning/30",
-  danger:  "bg-danger/20 text-danger border border-danger/30",
-  default: "bg-muted/20 text-foreground border border-muted/30",
+  success: "bg-grad-success text-white border border-success/40 shadow-sm",
+  warning: "bg-grad-warning text-white border border-warning/40 shadow-sm",
+  danger:  "bg-grad-danger text-white border border-danger/40 shadow-sm",
+  default: "bg-surface text-foreground border border-border",
 };
 
 interface BadgeProps {

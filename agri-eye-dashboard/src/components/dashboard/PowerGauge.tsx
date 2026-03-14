@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { powerSummary } from "@/lib/mockData";
+import { useLanguage } from "@/lib/LanguageContext";
 
 const SOLAR_MAX  = 100;   // W
 const SOLAR_VAL  = 87;
@@ -27,6 +28,7 @@ function semiArcPath(cx: number, cy: number, r: number) {
 export default function PowerGauge() {
   const [solarAnim, setSolarAnim] = useState(0);
   const [battAnim,  setBattAnim ] = useState(0);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const start = performance.now();
@@ -43,18 +45,28 @@ export default function PowerGauge() {
   const trackPath      = semiArcPath(CX, CY, R);
   const progressOffset = CIRCUMF - (solarAnim / SOLAR_MAX) * CIRCUMF;
 
-  const battColor = battAnim > 50 ? "#22C55E" : battAnim > 25 ? "#F59E0B" : "#EF4444";
+  const battColor = battAnim > 50
+    ? "linear-gradient(135deg, #16A34A 0%, #4ADE80 100%)"
+    : battAnim > 25
+      ? "linear-gradient(135deg, #D97706 0%, #FBBF24 100%)"
+      : "linear-gradient(135deg, #DC2626 0%, #F87171 100%)";
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-6 w-full">
       {/* Solar Arc Gauge */}
       <div className="flex flex-col items-center gap-1">
         <svg width="200" height="115" viewBox="0 0 200 115">
+          <defs>
+            <linearGradient id="solarGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#F4A01C" />
+              <stop offset="100%" stopColor="#F97316" />
+            </linearGradient>
+          </defs>
           {/* Track */}
           <path
             d={trackPath}
             fill="none"
-            stroke="#1A2E1A"
+            stroke="#E8F5E9"
             strokeWidth="12"
             strokeLinecap="round"
           />
@@ -62,7 +74,7 @@ export default function PowerGauge() {
           <path
             d={trackPath}
             fill="none"
-            stroke="#F4A01C"
+            stroke="url(#solarGradient)"
             strokeWidth="12"
             strokeLinecap="round"
             strokeDasharray={CIRCUMF}
@@ -70,14 +82,14 @@ export default function PowerGauge() {
             style={{ transition: "stroke-dashoffset 0.05s linear" }}
           />
           {/* Labels */}
-          <text x="100" y="92" textAnchor="middle" fill="#E8F5E9" fontSize="20" fontWeight="700" fontFamily="Sora,sans-serif">
+          <text x="100" y="92" textAnchor="middle" fill="#1A2E1A" fontSize="20" fontWeight="700" fontFamily="Sora,sans-serif">
             {Math.round(solarAnim)}W
           </text>
-          <text x="100" y="108" textAnchor="middle" fill="#4B6B50" fontSize="10" fontFamily="Sora,sans-serif">
+          <text x="100" y="108" textAnchor="middle" fill="#6B8F71" fontSize="10" fontFamily="Sora,sans-serif">
             / {SOLAR_MAX}W
           </text>
         </svg>
-        <span className="text-xs text-muted">Solar Output</span>
+        <span className="text-xs text-muted">{t("solarOutput")}</span>
       </div>
 
       {/* Battery Bar */}
@@ -87,7 +99,7 @@ export default function PowerGauge() {
             className="w-full rounded-b-md transition-none"
             style={{
               height: `${battAnim}%`,
-              backgroundColor: battColor,
+              background: battColor,
               transition: "height 0.05s linear",
             }}
           />
@@ -96,7 +108,7 @@ export default function PowerGauge() {
         <span className="text-sm font-bold text-foreground font-sora">
           {Math.round(battAnim)}%
         </span>
-        <span className="text-xs text-muted">Battery</span>
+        <span className="text-xs text-muted">{t("battery")}</span>
       </div>
     </div>
   );

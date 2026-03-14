@@ -76,6 +76,25 @@ export const cameras: Camera[] = [
   { id: "cam-06", name: "Water Pump",     location: "Irrigation Hub",  status: "online",    lastMotion: "32 min ago", thumbnailColor: "#162816" },
 ];
 
+export type CameraZoneStatus = "active" | "alert" | "warning";
+
+export interface CameraZone {
+  id: string;
+  zone: string;
+  status: CameraZoneStatus;
+  alert: boolean;
+  recording: boolean;
+}
+
+export const cameraZones: CameraZone[] = [
+  { id: "CAM-01", zone: "North Canopy", status: "active", alert: false, recording: true },
+  { id: "CAM-02", zone: "South Canopy", status: "active", alert: false, recording: true },
+  { id: "CAM-03", zone: "East Perimeter", status: "alert", alert: true, recording: true },
+  { id: "CAM-04", zone: "West Perimeter", status: "active", alert: false, recording: true },
+  { id: "CAM-05", zone: "Central Canopy", status: "warning", alert: false, recording: true },
+  { id: "CAM-06", zone: "Entrance Gate", status: "active", alert: false, recording: true },
+];
+
 export interface MotionEvent {
   id: string;
   cameraId: string;
@@ -181,6 +200,107 @@ export const cropHealthHistory: CropHealthHistory[] = [
   { week: "W6", ndvi: 0.78, healthScore: 82 },
   { week: "W7", ndvi: 0.80, healthScore: 85 },
   { week: "W8", ndvi: 0.82, healthScore: 88 },
+];
+
+export type CameraDetectionStatus = "Active" | "Monitoring" | "Healthy";
+export type CameraDetectionSeverity = "High" | "Medium" | "Low" | "None";
+
+export interface CameraDetection {
+  cameraId: string;
+  zone: string;
+  plantId: string;
+  plantLocation: {
+    x: number;
+    y: number;
+  };
+  disease: string;
+  confidence: number;
+  status: CameraDetectionStatus;
+  severity: CameraDetectionSeverity;
+  lastScan: string;
+  affectedLeafArea: number;
+  recommendation: string;
+}
+
+export const cameraDetections: CameraDetection[] = [
+  {
+    cameraId: "CAM-01",
+    zone: "North Canopy",
+    plantId: "P-014",
+    plantLocation: { x: 62, y: 41 },
+    disease: "Powdery Mildew",
+    confidence: 83,
+    status: "Active",
+    severity: "High",
+    lastScan: "2 min ago",
+    affectedLeafArea: 34,
+    recommendation: "Apply sulfur-based fungicide within 24 hours",
+  },
+  {
+    cameraId: "CAM-02",
+    zone: "South Canopy",
+    plantId: "P-027",
+    plantLocation: { x: 38, y: 55 },
+    disease: "Healthy Leaf",
+    confidence: 97,
+    status: "Healthy",
+    severity: "None",
+    lastScan: "2 min ago",
+    affectedLeafArea: 0,
+    recommendation: "No action required",
+  },
+  {
+    cameraId: "CAM-03",
+    zone: "East Perimeter",
+    plantId: "P-031",
+    plantLocation: { x: 71, y: 33 },
+    disease: "Anthracnose",
+    confidence: 71,
+    status: "Monitoring",
+    severity: "Medium",
+    lastScan: "2 min ago",
+    affectedLeafArea: 18,
+    recommendation: "Monitor closely, apply copper fungicide if spreading",
+  },
+  {
+    cameraId: "CAM-04",
+    zone: "West Perimeter",
+    plantId: "P-008",
+    plantLocation: { x: 45, y: 62 },
+    disease: "Healthy Leaf",
+    confidence: 91,
+    status: "Healthy",
+    severity: "None",
+    lastScan: "2 min ago",
+    affectedLeafArea: 0,
+    recommendation: "No action required",
+  },
+  {
+    cameraId: "CAM-05",
+    zone: "Central Canopy",
+    plantId: "P-019",
+    plantLocation: { x: 55, y: 48 },
+    disease: "Sooty Mould",
+    confidence: 76,
+    status: "Monitoring",
+    severity: "Medium",
+    lastScan: "2 min ago",
+    affectedLeafArea: 22,
+    recommendation: "Wipe leaves with neem oil solution",
+  },
+  {
+    cameraId: "CAM-06",
+    zone: "Entrance Gate",
+    plantId: "P-003",
+    plantLocation: { x: 29, y: 57 },
+    disease: "Healthy Leaf",
+    confidence: 94,
+    status: "Healthy",
+    severity: "None",
+    lastScan: "2 min ago",
+    affectedLeafArea: 0,
+    recommendation: "No action required",
+  },
 ];
 
 // ─── Alerts ───────────────────────────────────────────────────────────────────
@@ -293,13 +413,14 @@ export interface AlertFeedEntry {
   time: string;
   level: "danger" | "warning" | "clear";
   message: string;
+  nodeId?: number;
 }
 
 export const alertFeed: AlertFeedEntry[] = [
-  { id: "af-1", time: "14:30", level: "danger",  message: "Intruder detected at North Gate perimeter" },
-  { id: "af-2", time: "13:15", level: "danger",  message: "HVAC fault in Greenhouse Zone F" },
-  { id: "af-3", time: "12:45", level: "warning", message: "Soil moisture below threshold in Zone B" },
-  { id: "af-4", time: "10:20", level: "warning", message: "Bird activity detected near Zone C orchard" },
+  { id: "af-1", time: "14:30", level: "danger",  message: "Intruder detected at North Gate perimeter", nodeId: 1 },
+  { id: "af-2", time: "13:15", level: "danger",  message: "HVAC fault in Greenhouse Zone F", nodeId: 3 },
+  { id: "af-3", time: "12:45", level: "warning", message: "Soil moisture below threshold in Zone B", nodeId: 2 },
+  { id: "af-4", time: "10:20", level: "warning", message: "Bird activity detected near Zone C orchard", nodeId: 5 },
   { id: "af-5", time: "08:05", level: "clear",   message: "All systems nominal – morning check passed" },
 ];
 
@@ -327,6 +448,46 @@ export const perimeterNodes: PerimeterNode[] = [
   { id: "Node 5", x: 25, y: 88, status: "warning" },
   { id: "Node 6", x: 10, y: 50, status: "active"  },
 ];
+
+export interface HornZone {
+  nodeId: number;
+  zone: string;
+  hornActive: boolean;
+  autoMode: boolean;
+  lastTriggered: string | null;
+}
+
+export const hornZones: HornZone[] = [
+  { nodeId: 1, zone: "North Gate", hornActive: false, autoMode: true, lastTriggered: null },
+  { nodeId: 2, zone: "East Fence", hornActive: false, autoMode: true, lastTriggered: null },
+  { nodeId: 3, zone: "South Corner", hornActive: true, autoMode: true, lastTriggered: "2 min ago" },
+  { nodeId: 4, zone: "West Fence", hornActive: false, autoMode: true, lastTriggered: null },
+  { nodeId: 5, zone: "NE Midpoint", hornActive: false, autoMode: false, lastTriggered: "18 min ago" },
+  { nodeId: 6, zone: "NW Midpoint", hornActive: false, autoMode: true, lastTriggered: null },
+];
+
+export interface PlantZone {
+  id: string;
+  name: string;
+  area: number;
+  kc: number;
+  stage: string;
+  tapOpen: boolean;
+  soilMoisture: number;
+}
+
+export const plantZones: PlantZone[] = [
+  { id: "Z1", name: "Zone 1 - Alphonso Block", area: 45, kc: 0.85, stage: "Fruit Development", tapOpen: false, soilMoisture: 38 },
+  { id: "Z2", name: "Zone 2 - Kesar Block", area: 52, kc: 0.8, stage: "Fruit Development", tapOpen: true, soilMoisture: 29 },
+  { id: "Z3", name: "Zone 3 - Dasheri Block", area: 38, kc: 0.7, stage: "Flowering", tapOpen: false, soilMoisture: 44 },
+  { id: "Z4", name: "Zone 4 - Langra Block", area: 60, kc: 0.75, stage: "Vegetative Growth", tapOpen: false, soilMoisture: 51 },
+  { id: "Z5", name: "Zone 5 - Totapuri Block", area: 41, kc: 0.65, stage: "Dormant", tapOpen: false, soilMoisture: 62 },
+  { id: "Z6", name: "Zone 6 - Chaunsa Block", area: 55, kc: 0.82, stage: "Fruit Development", tapOpen: false, soilMoisture: 33 },
+  { id: "Z7", name: "Zone 7 - Himsagar Block", area: 49, kc: 0.78, stage: "Ripening", tapOpen: true, soilMoisture: 27 },
+  { id: "Z8", name: "Zone 8 - Badami Block", area: 43, kc: 0.72, stage: "Post-Harvest", tapOpen: false, soilMoisture: 58 },
+];
+
+export const globalEt0 = 8.2;
 
 // ─── Power Data ───────────────────────────────────────────────────────────────
 

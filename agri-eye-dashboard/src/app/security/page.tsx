@@ -1,96 +1,111 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { alertStats } from "@/lib/mockData";
+import { alertStats, hornZones } from "@/lib/mockData";
 import Card from "@/components/ui/Card";
 import Toast from "@/components/ui/Toast";
 import Toggle from "@/components/ui/Toggle";
 import PerimeterMap from "@/components/dashboard/PerimeterMap";
 import AlertFeed from "@/components/dashboard/AlertFeed";
 import PageWrapper from "@/components/dashboard/PageWrapper";
-
-const waveBarCount = 3;
+import HornControlPanel from "@/components/dashboard/HornControlPanel";
+import { useLanguage } from "@/lib/LanguageContext";
 
 export default function SecurityPage() {
   const [showToast, setShowToast] = useState<boolean>(false);
-  const [deterrent, setDeterrent] = useState(false);
+  const [allZonesOverride, setAllZonesOverride] = useState(false);
+  const [hornStates, setHornStates] = useState<boolean[]>(hornZones.map((zone) => zone.hornActive));
+  const { t } = useLanguage();
+
+  const triggerHornForNode = (nodeId: number) => {
+    setHornStates((prev) =>
+      prev.map((state, index) => (hornZones[index].nodeId === nodeId ? true : state))
+    );
+  };
 
   useEffect(() => {
-    const t = setTimeout(() => setShowToast(true), 4000);
+    const t = setTimeout(() => {
+      setShowToast(true);
+      setHornStates((prev) =>
+        prev.map((state, index) => (hornZones[index].nodeId === 3 ? true : state))
+      );
+    }, 4000);
     return () => clearTimeout(t);
   }, []);
+
+  useEffect(() => {
+    if (allZonesOverride) {
+      setHornStates(hornZones.map(() => true));
+    }
+  }, [allZonesOverride]);
+
+  const node3HornActive = hornStates[2];
 
   return (
     <PageWrapper>
       <div className="flex flex-col gap-5 sm:gap-6">
-      <h1 className="text-xl sm:text-2xl font-bold text-foreground font-sora">Security</h1>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground font-sora">{t("security")}</h1>
+          <p className="mt-1 text-xs sm:text-sm text-muted">{t("perimeterEventsSubtitle")}</p>
+        </div>
 
-      {/* Perimeter Map */}
-      <Card>
-        <h2 className="text-sm font-semibold text-foreground/80 mb-3">Live Perimeter Surveillance</h2>
-        <PerimeterMap />
-      </Card>
-
-      {/* Alert Timeline + Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Perimeter Map */}
         <Card>
-          <h2 className="text-sm font-semibold text-foreground/80 mb-3">Alert Timeline</h2>
-          <AlertFeed />
+          <h2 className="text-sm font-semibold text-primary mb-3">{t("perimeter")}</h2>
+          <PerimeterMap hornStates={hornStates} />
         </Card>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {[
-            { label: "Total Alerts",       value: alertStats.total          },
-            { label: "Animal Intrusions",  value: alertStats.animalIntrusion },
-            { label: "Bird Activity",      value: alertStats.birdActivity   },
-            { label: "False Positives",    value: alertStats.falsePositive  },
-          ].map(({ label, value }) => (
-            <Card key={label} className="flex flex-col gap-1 justify-center">
-              <p className="text-3xl font-bold text-accent font-sora">{value}</p>
-              <p className="text-xs text-muted leading-tight">{label}</p>
-            </Card>
-          ))}
-        </div>
-      </div>
+        {/* Alert Timeline + Stats */}
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <Card>
+            <h2 className="text-sm font-semibold text-primary mb-3">{t("alertTimeline")}</h2>
+            <AlertFeed onTriggerHorn={triggerHornForNode} />
+          </Card>
 
-      {/* Audio Deterrent */}
-      <Card>
-        <h2 className="text-sm font-semibold text-foreground/80 mb-4">🔊 Audio Deterrent System</h2>
-        <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
-          <Toggle checked={deterrent} onChange={setDeterrent} />
-          <span className={`text-sm font-medium transition-colors ${deterrent ? "text-success" : "text-muted"}`}>
-            Auto Audio Deterrent {deterrent ? "- Active" : "- Off"}
-          </span>
-
-          {/* Waveform animation */}
-          <div className="flex items-end gap-1 h-6 ml-2">
-            {Array.from({ length: waveBarCount }).map((_, i) => (
-              <motion.div
-                key={i}
-                className="w-1.5 rounded-full bg-success"
-                style={{ originY: 1 }}
-                animate={deterrent ? { scaleY: [1, 1.8, 1] } : { scaleY: 1 }}
-                transition={
-                  deterrent
-                    ? { repeat: Infinity, duration: 0.7, delay: i * 0.15, ease: "easeInOut" }
-                    : {}
-                }
-                initial={{ height: 12, scaleY: 1 }}
-              />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {[
+              { label: t("totalAlerts"), value: alertStats.total },
+              { label: t("animalIntrusion"), value: alertStats.animalIntrusion },
+              { label: t("birdActivity"), value: alertStats.birdActivity },
+              { label: t("falsePositive"), value: alertStats.falsePositive },
+            ].map(({ label, value }) => (
+              <Card key={label} className="flex flex-col justify-center gap-1 p-4">
+                <p className="text-2xl sm:text-3xl font-bold text-accent font-sora">{value}</p>
+                <p className="text-xs text-muted leading-tight">{label}</p>
+              </Card>
             ))}
           </div>
         </div>
-      </Card>
 
-      {/* Toast */}
-      {showToast && (
-        <Toast
-          message="⚠️ Animal intrusion detected at Node 3 — Audio deterrent activated"
-          level="danger"
-          onClose={() => setShowToast(false)}
-        />
-      )}
+        {/* Audio Deterrent */}
+        <Card>
+          <p className="mb-2 text-xs font-medium text-muted">{t("deterrentSystem")}</p>
+          <h2 className="text-sm font-semibold text-primary mb-4">🔊 {t("zoneHornControlPerNode")}</h2>
+
+          {node3HornActive && (
+            <div className="mb-3 rounded-lg border border-danger/50 bg-danger/10 px-3 py-2 text-sm font-medium text-danger">
+              {t("activeIntrusionMessage")}
+            </div>
+          )}
+
+          <div className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2.5">
+            <Toggle checked={allZonesOverride} onChange={setAllZonesOverride} />
+            <span className="text-sm text-foreground/85">
+              {t("autoAudio")} • {t("allZonesOverride")} {allZonesOverride ? `- ${t("enabled")}` : `- ${t("disabled")}`}
+            </span>
+          </div>
+
+          <HornControlPanel hornStates={hornStates} setHornStates={setHornStates} />
+        </Card>
+
+        {/* Toast */}
+        {showToast && (
+          <Toast
+            message={t("intrusionToast")}
+            level="danger"
+            onClose={() => setShowToast(false)}
+          />
+        )}
       </div>
     </PageWrapper>
   );

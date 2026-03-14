@@ -1,6 +1,10 @@
 "use client";
 
+import { useLanguage } from "@/lib/LanguageContext";
+
 export default function CameraFeed() {
+  const { t } = useLanguage();
+
   return (
     <div className="relative w-full aspect-video bg-black/60 rounded-xl overflow-hidden">
       {/* Scan line */}
@@ -8,14 +12,14 @@ export default function CameraFeed() {
 
       {/* Placeholder text */}
       <div className="absolute inset-0 flex items-center justify-center flex-col gap-1 pointer-events-none">
-        <span className="text-xs text-muted/60 font-mono">Live Feed</span>
-        <span className="text-xs text-muted/50 font-mono">Canopy Level</span>
-        <span className="text-xs text-muted/50 font-mono">Camera Active</span>
+        <span className="text-xs text-surface/80 font-mono">{t("liveFeed")}</span>
+        <span className="text-xs text-surface/70 font-mono">{t("canopyLevel")}</span>
+        <span className="text-xs text-surface/70 font-mono">{t("cameraActive")}</span>
       </div>
 
       {/* Top-left label */}
       <div className="absolute top-2 left-3">
-        <span className="text-[10px] font-mono text-foreground/50 tracking-wider">CAM-01</span>
+        <span className="text-[10px] font-mono text-surface/70 tracking-wider">CAM-01</span>
       </div>
 
       {/* Top-right LIVE badge */}
@@ -24,7 +28,7 @@ export default function CameraFeed() {
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
           <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
         </span>
-        <span className="text-[10px] font-bold tracking-widest text-red-400 font-mono">LIVE</span>
+        <span className="text-[10px] font-bold tracking-widest text-red-400 font-mono">{t("liveFeed")}</span>
       </div>
 
       {/* Corner overlay for aesthetics */}
