@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --sidebar-w: 64px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.main-content {
+  margin-left: var(--sidebar-w);
+  transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --sidebar-w: 0px;
+  }
+
+}
+
 body {
   background: linear-gradient(
     135deg,
@@ -79,6 +99,8 @@ html[data-script="bengali"] body {
 }
 
 .card-light {
+  position: relative;
+  z-index: 20;
   background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -178,4 +200,31 @@ html[data-script="bengali"] body {
 .language-panel-portal {
   z-index: 99999 !important;
   position: fixed !important;
+}
+
+/* Shimmer text for farm name */
+.shimmer-text {
+  background: linear-gradient(90deg, #1A2E1A 0%, #2D6A4F 40%, #52B788 60%, #1A2E1A 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+/* Ripple effect */
+.ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+.ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.40);
+  transform: scale(0);
+  animation: ripple-expand 0.55s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes ripple-expand {
+  to { transform: scale(4); opacity: 0; }
 }

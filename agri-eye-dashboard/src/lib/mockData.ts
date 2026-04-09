@@ -84,11 +84,12 @@ export interface CameraZone {
   status: CameraZoneStatus;
   alert: boolean;
   recording: boolean;
+  streamUrl?: string;
 }
 
 export const cameraZones: CameraZone[] = [
-  { id: "CAM-01", zone: "North Canopy", status: "active", alert: false, recording: true },
-  { id: "CAM-02", zone: "South Canopy", status: "active", alert: false, recording: true },
+  { id: "CAM-01", zone: "North Canopy", status: "active", alert: false, recording: true, streamUrl: "/api/stream" },
+  { id: "CAM-02", zone: "South Canopy", status: "active", alert: false, recording: true},
   { id: "CAM-03", zone: "East Perimeter", status: "alert", alert: true, recording: true },
   { id: "CAM-04", zone: "West Perimeter", status: "active", alert: false, recording: true },
   { id: "CAM-05", zone: "Central Canopy", status: "warning", alert: false, recording: true },

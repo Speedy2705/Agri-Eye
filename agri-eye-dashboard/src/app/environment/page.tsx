@@ -7,6 +7,7 @@ import {
 import { environmentalData } from "@/lib/mockData";
 import Card from "@/components/ui/Card";
 import PageWrapper from "@/components/dashboard/PageWrapper";
+import PageContainer from "@/components/dashboard/PageContainer";
 import { useLanguage } from "@/lib/LanguageContext";
 
 function calcStats(arr: number[]) {
@@ -68,8 +69,8 @@ export default function EnvironmentPage() {
 
   return (
     <PageWrapper>
-      <div className="flex flex-col gap-5 sm:gap-6">
-      <h1 className="text-xl sm:text-2xl font-bold text-foreground font-sora">{t("environment")}</h1>
+      <PageContainer title={t("environment")}>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
       {/* Temperature */}
       <Card>
@@ -123,6 +124,7 @@ export default function EnvironmentPage() {
       </Card>
 
       </div>
+      </PageContainer>
     </PageWrapper>
   );
 }

@@ -8,6 +8,7 @@ import Toggle from "@/components/ui/Toggle";
 import PerimeterMap from "@/components/dashboard/PerimeterMap";
 import AlertFeed from "@/components/dashboard/AlertFeed";
 import PageWrapper from "@/components/dashboard/PageWrapper";
+import PageContainer from "@/components/dashboard/PageContainer";
 import HornControlPanel from "@/components/dashboard/HornControlPanel";
 import { useLanguage } from "@/lib/LanguageContext";
 
@@ -43,11 +44,8 @@ export default function SecurityPage() {
 
   return (
     <PageWrapper>
+      <PageContainer title={t("security")} subtitle={t("perimeterEventsSubtitle")}>
       <div className="flex flex-col gap-5 sm:gap-6">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground font-sora">{t("security")}</h1>
-          <p className="mt-1 text-xs sm:text-sm text-muted">{t("perimeterEventsSubtitle")}</p>
-        </div>
 
         {/* Perimeter Map */}
         <Card>
@@ -107,6 +105,7 @@ export default function SecurityPage() {
           />
         )}
       </div>
+      </PageContainer>
     </PageWrapper>
   );
 }

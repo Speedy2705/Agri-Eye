@@ -14,6 +14,7 @@ import Badge from "@/components/ui/Badge";
 import ProgressRing from "@/components/ui/ProgressRing";
 import MonitoringCameraCard from "@/components/dashboard/MonitoringCameraCard";
 import PageWrapper from "@/components/dashboard/PageWrapper";
+import PageContainer from "@/components/dashboard/PageContainer";
 import { useLanguage } from "@/lib/LanguageContext";
 
 function statusVariant(s: string): "danger" | "warning" | "success" {
@@ -68,13 +69,8 @@ export default function MonitoringPage() {
 
   return (
     <PageWrapper>
+      <PageContainer title={`🌿 ${t("cropHealthMonitoring")}`} subtitle={t("monitoringSubtitle")}>
       <div className="flex flex-col gap-5 sm:gap-6">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground font-sora">🌿 {t("cropHealthMonitoring")}</h1>
-          <p className="mt-1 text-xs sm:text-sm text-muted">
-            {t("monitoringSubtitle")}
-          </p>
-        </div>
 
         <div className="flex flex-wrap gap-3">
           <span className="rounded-full border border-danger/40 bg-danger/10 px-3 py-1 text-xs font-medium text-danger">
@@ -111,7 +107,7 @@ export default function MonitoringPage() {
           })}
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
           <AnimatePresence mode="popLayout">
             {filteredDetections.map((detection, index) => (
               <motion.div
@@ -232,6 +228,7 @@ export default function MonitoringPage() {
         </Card>
         </div>
       </div>
+      </PageContainer>
     </PageWrapper>
   );
 }

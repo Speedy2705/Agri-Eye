@@ -5,6 +5,7 @@ import { Circle, Maximize2, Square } from "lucide-react";
 import type { CameraZone } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/LanguageContext";
+import LiveStreamFeed from "@/components/dashboard/LiveStreamFeed";
 
 interface ZoneCameraCardProps {
   camera: CameraZone;
@@ -30,9 +31,25 @@ export default function ZoneCameraCard({
         className
       )}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-black/0 via-primary/5 to-black/35 transition-opacity group-hover:opacity-80" />
+      {camera.streamUrl ? (
+        <div className="absolute inset-0 z-0">
+          <LiveStreamFeed streamUrl={camera.streamUrl} className="h-full w-full" />
+        </div>
+      ) : (
+        /* Existing decorative background for all other cameras */
+        <div className="absolute inset-0 bg-gradient-to-br from-black/0 via-primary/5 to-black/35 transition-opacity group-hover:opacity-80" />
+      )}
 
-      <div className={cn("absolute inset-x-0 top-0 h-0.5 animate-scanLine", scanLineColor)} />
+      {/* Shared gradient overlay so text stays legible over the video */}
+      <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+
+      {/* Scan line */}
+      <div
+        className={cn(
+          "absolute inset-x-0 top-0 h-0.5 animate-scanLine z-20",
+          scanLineColor
+        )}
+      />
 
       {!isRecording && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/30 pointer-events-none">
@@ -46,13 +63,17 @@ export default function ZoneCameraCard({
         <span className="text-[10px] font-mono tracking-widest text-surface/70">{camera.id}</span>
       </div>
 
-      <div className="absolute top-2 right-3 z-20 flex items-center gap-1.5">
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full rounded-full bg-danger opacity-75 animate-ping" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-danger" />
-        </span>
-        <span className="text-[10px] font-bold tracking-widest text-danger">{t("liveFeed")}</span>
-      </div>
+      {!camera.streamUrl && (
+        <div className="absolute top-2 right-3 z-30 flex items-center gap-1.5">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full rounded-full bg-danger opacity-75 animate-ping" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-danger" />
+          </span>
+          <span className="text-[10px] font-bold tracking-widest text-danger">
+            {t("liveFeed")}
+          </span>
+        </div>
+      )}
 
       <div className="absolute bottom-2 left-3 z-20">
         <span className="text-xs font-medium text-surface/90">{camera.zone}</span>

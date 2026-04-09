@@ -11,9 +11,9 @@ export default function PageWrapper({ children }: PageWrapperProps) {
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -16 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-      className="relative"
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      style={{ position: "relative", zIndex: 20 }}
+      className="relative min-h-screen w-full"
     >
       <div
         className="absolute top-0 left-0 right-0 h-48 pointer-events-none"

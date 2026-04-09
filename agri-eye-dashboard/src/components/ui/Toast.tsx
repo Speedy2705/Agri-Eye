@@ -27,7 +27,7 @@ export default function Toast({ message, level, onClose }: ToastProps) {
         exit={{ opacity: 0, y: 80 }}
         transition={{ duration: 0.3 }}
         className={cn(
-          "fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-xl border-l-4 border border-border bg-card px-4 py-3 shadow-xl backdrop-blur-sm max-w-sm",
+          "fixed bottom-6 right-6 z-[99] flex items-center gap-3 rounded-xl border-l-4 border border-border bg-card px-4 py-3 shadow-xl backdrop-blur-sm max-w-sm",
           levelClasses[level]
         )}
       >

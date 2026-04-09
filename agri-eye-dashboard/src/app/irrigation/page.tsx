@@ -4,6 +4,7 @@ import { useState } from "react";
 import { globalEt0 } from "@/lib/mockData";
 import Card from "@/components/ui/Card";
 import PageWrapper from "@/components/dashboard/PageWrapper";
+import PageContainer from "@/components/dashboard/PageContainer";
 import SmartIrrigationPanel from "@/components/dashboard/SmartIrrigationPanel";
 import WaterCalculator from "@/components/dashboard/WaterCalculator";
 import { useLanguage } from "@/lib/LanguageContext";
@@ -14,14 +15,8 @@ export default function IrrigationPage() {
 
   return (
     <PageWrapper>
+      <PageContainer title={`💧 ${t("irrigationPageTitle")}`} subtitle={t("irrigationSubtitle")}>
       <div className="flex flex-col gap-5 sm:gap-6">
-        <Card>
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground font-sora">💧 {t("irrigationPageTitle")}</h1>
-          <p className="mt-1 text-xs sm:text-sm text-muted leading-relaxed">
-            {t("irrigationSubtitle")}
-          </p>
-        </Card>
-
         <Card className="p-4 sm:p-5">
           <div className="flex flex-col gap-2.5">
             <div className="flex items-center justify-between">
@@ -58,6 +53,7 @@ export default function IrrigationPage() {
           {t("irrigationFooter")}
         </p>
       </div>
+      </PageContainer>
     </PageWrapper>
   );
 }

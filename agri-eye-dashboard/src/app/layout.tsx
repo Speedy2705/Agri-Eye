@@ -8,10 +8,10 @@ import {
   Sora,
 } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/components/dashboard/Sidebar";
-import Navbar from "@/components/dashboard/Navbar";
-import RouteTransition from "@/components/dashboard/RouteTransition";
-import LanguageTransition from "@/components/dashboard/LanguageTransition";
+import Sidebar from "../components/dashboard/Sidebar";
+import ScrollProgress from "../components/dashboard/ScrollProgress";
+import CursorGlow from "@/components/dashboard/CursorGlow";
+import MainContentShell from "@/components/dashboard/MainContentShell";
 import { LanguageProvider } from "@/lib/LanguageContext";
 
 const sora = Sora({
@@ -63,20 +63,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${sora.variable} ${notoDevanagari.variable} ${notoTelugu.variable} ${notoTamil.variable} ${notoKannada.variable} ${notoBengali.variable}`}
+      className={`${sora.variable} ${notoDevanagari.variable} ${notoTelugu.variable} ${notoTamil.variable} ${notoKannada.variable} ${notoBengali.variable} scroll-smooth`}
     >
       <body className="font-sora antialiased">
         <LanguageProvider>
-          <div className="flex h-screen bg-transparent overflow-hidden">
+          <CursorGlow />
+          <ScrollProgress />
+          <div className="flex min-h-screen bg-transparent">
             <Sidebar />
-            <div className="flex-1 flex flex-col overflow-hidden">
-              <Navbar />
-              <main className="flex-1 overflow-y-auto bg-transparent p-3 pb-20 sm:p-4 md:p-6 md:pb-6">
-                <LanguageTransition>
-                  <RouteTransition>{children}</RouteTransition>
-                </LanguageTransition>
-              </main>
-            </div>
+            <MainContentShell>{children}</MainContentShell>
           </div>
         </LanguageProvider>
       </body>
