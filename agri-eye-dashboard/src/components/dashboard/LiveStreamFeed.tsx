@@ -15,21 +15,21 @@ export default function LiveStreamFeed({ streamUrl, className }: LiveStreamFeedP
   const [status, setStatus] = useState<StreamStatus>("connecting");
   const [retryCount, setRetryCount] = useState(0);
   const [lastError, setLastError] = useState<string | null>(null);
-  const [activeStreamUrl, setActiveStreamUrl] = useState(streamUrl);
-  const retryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const firstFrameTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const fallbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const statusRef = useRef<StreamStatus>("connecting");
-  const retryRef = useRef(0);
 
   const backendFallbackUrl =
     streamUrl === "/api/stream"
       ? process.env.NEXT_PUBLIC_BACKEND_STREAM_URL ?? "http://localhost:4000/api/stream"
       : streamUrl;
-  const preferredStreamUrl =
-    process.env.NODE_ENV === "development" && streamUrl === "/api/stream"
-      ? backendFallbackUrl
-      : streamUrl;
+  const preferredStreamUrl = streamUrl === "/api/stream" ? backendFallbackUrl : streamUrl;
+
+  const [activeStreamUrl, setActiveStreamUrl] = useState(preferredStreamUrl);
+  const retryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const firstFrameTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fallbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const statusRef = useRef<StreamStatus>("connecting");
+  const retryRef = useRef(0);
+  const lastReconnectAt = useRef(0);
 
   const debug = useCallback(
     (event: string, details?: Record<string, unknown>) => {
@@ -103,6 +103,17 @@ export default function LiveStreamFeed({ streamUrl, className }: LiveStreamFeedP
     }
   }, [activeStreamUrl, backendFallbackUrl, debug, streamUrl]);
 
+  const reconnect = useCallback(
+    (reason: string) => {
+      const now = Date.now();
+      if (now - lastReconnectAt.current < 1200) return;
+      lastReconnectAt.current = now;
+      debug("reconnect:trigger", { reason, status: statusRef.current, retryCount: retryRef.current });
+      connect();
+    },
+    [connect, debug]
+  );
+
   const handleLoadStart = useCallback(() => {
     // Keep connecting until an actual frame is decoded.
     debug("img:loadstart", {
@@ -166,9 +177,43 @@ export default function LiveStreamFeed({ streamUrl, className }: LiveStreamFeedP
       if (retryTimer.current) clearTimeout(retryTimer.current);
       if (firstFrameTimer.current) clearTimeout(firstFrameTimer.current);
       if (fallbackTimer.current) clearTimeout(fallbackTimer.current);
+      if (resumeTimer.current) clearTimeout(resumeTimer.current);
       if (imgRef.current) imgRef.current.src = "";
     };
   }, [connect, debug]);
+
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        if (resumeTimer.current) clearTimeout(resumeTimer.current);
+        // Short debounce so reconnect happens after the tab is fully active.
+        resumeTimer.current = setTimeout(() => reconnect("visibility-resume"), 180);
+      }
+    };
+
+    const handleFocus = () => {
+      if (resumeTimer.current) clearTimeout(resumeTimer.current);
+      resumeTimer.current = setTimeout(() => reconnect("window-focus"), 180);
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [reconnect]);
+
+  useEffect(() => {
+    const keepAliveInterval = setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      if (statusRef.current !== "live") return;
+      reconnect("keepalive-refresh");
+    }, 45000);
+
+    return () => clearInterval(keepAliveInterval);
+  }, [reconnect]);
 
   useEffect(() => {
     debug("status:changed", { status, retryCount });
